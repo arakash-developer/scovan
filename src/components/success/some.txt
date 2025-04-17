@@ -1,0 +1,85 @@
+
+
+
+
+    function encodeData(data) {
+      const jsonString = JSON.stringify(data); // Convert object to string
+      return btoa(new TextEncoder().encode(jsonString).reduce((acc, byte) => acc + String.fromCharCode(byte), ''));
+    }
+    
+    function decodeData(encodedString) {
+      const decodedString = new Uint8Array([...atob(encodedString)].map(char => char.charCodeAt(0)));
+      return JSON.parse(new TextDecoder().decode(decodedString)); // Convert string back to JSON
+    }
+    
+    // Example usage:
+    const userData = {
+      uname: "Admin",
+      email: "admin@gmail.com",
+      login: true,
+      role: "admin",
+    };
+    
+    // Encode
+    const encoded = encodeData(userData);
+    console.log("Encoded:", encoded);
+    
+    // Decode
+    const decoded = decodeData(encoded);
+    console.log("Decoded:", decoded);
+    
+
+    
+
+
+
+
+    async function hashJSON(jsonObj) {
+      // Convert the JSON object to a string
+      const jsonString = JSON.stringify(jsonObj);
+
+      // Convert string to an array buffer for the crypto API
+      const encoder = new TextEncoder();
+      const data = encoder.encode(jsonString);
+
+      // Generate the hash using the Web Crypto API
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+      // Convert the hash to a hex string
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+
+      return hashHex;
+    }
+
+    // Example usage:
+    async function main() {
+      const userData = {
+        uname: "Admin",
+        email: "admin@gmail.com",
+        login: true,
+        role: "admin",
+      };
+
+      try {
+        const hashedResult = await hashJSON(userData);
+        console.log("Original data:", userData);
+        console.log("Hashed result:", hashedResult);
+      } catch (error) {
+        console.error("Hashing failed:", error);
+      }
+    }
+
+    // Call the main function to see the result
+    main();
+
+
+
+
+
+
+
+
+
